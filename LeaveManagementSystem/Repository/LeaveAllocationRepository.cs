@@ -16,6 +16,12 @@ namespace LeaveManagementSystem.Repository
         {
             _db = db;
         }
+
+        public bool CheckAllocation(int leavetypeid, string employeeid)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Create(LeaveAllocation entity)
         {
             _db.LeaveAllocations.Add(entity);
@@ -46,10 +52,17 @@ namespace LeaveManagementSystem.Repository
             return leaveType;
         }
 
-        public ICollection<LeaveAllocation> GetLeaveAllocationsByEmployee(string id)
+        public ICollection<LeaveAllocation> GetLeaveAllocationsByEmployee(string employeeid)
         {
             var period = DateTime.Now.Year;
-            return FindAll().Where(q => q.EmployeeId == id && q.Period == period).ToList();
+            return FindAll().Where(q => q.EmployeeId == employeeid && q.Period == period).ToList();
+        }
+
+        public LeaveAllocation GetLeaveAllocationsByEmployeeAndType(string employeeid, int leavetypeid)
+        {
+            var period = DateTime.Now.Year;
+            return FindAll()
+                    .FirstOrDefault(q => q.EmployeeId == employeeid && q.Period == period && q.LeaveTypeId == leavetypeid);
         }
 
         public bool isExists(int id)

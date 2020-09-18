@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace leave_management.Controllers
+namespace LeaveManagementSystem.Controllers
 {
     [Authorize]
     public class LeaveRequestController : Controller
