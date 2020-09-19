@@ -10,264 +10,117 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace leave_management.Controllers
+namespace LeaveManagementSystem.Controllers
 {
-    [Authorize]
-    public class LeaveRequestController : Controller
+    [Authorize(Roles = "Administrator")]
+    public class LeaveAllocationController : Controller
     {
-        private readonly ILeaveRequestRepository _leaveRequestRepo;
-        private readonly ILeaveTypeRepository _leaveTypeRepo;
-        private readonly ILeaveAllocationRepository _leaveAllocRepo;
+        private readonly ILeaveTypeRepository _leaverepo;
+        private readonly ILeaveAllocationRepository _leaveallocationrepo;
         private readonly IMapper _mapper;
         private readonly UserManager<Employee> _userManager;
 
-        public LeaveRequestController(
-            ILeaveRequestRepository leaveRequestRepo,
-            ILeaveTypeRepository leaveTypeRepo,
-            ILeaveAllocationRepository leaveAllocRepo,
+        public LeaveAllocationController(
+            ILeaveTypeRepository leaverepo,
+            ILeaveAllocationRepository leaveallocationrepo,
             IMapper mapper,
             UserManager<Employee> userManager
         )
         {
-            _leaveRequestRepo = leaveRequestRepo;
-            _leaveTypeRepo = leaveTypeRepo;
-            _leaveAllocRepo = leaveAllocRepo;
+            _leaverepo = leaverepo;
+            _leaveallocationrepo = leaveallocationrepo;
             _mapper = mapper;
             _userManager = userManager;
         }
 
-        [Authorize(Roles = "Administrator")]
-        // GET: LeaveRequest
+        // GET: LeaveAllocation
         public ActionResult Index()
         {
-            var leaveRequests = _leaveRequestRepo.FindAll();
-            var leaveRequstsModel = _mapper.Map<List<LeaveRequestVM>>(leaveRequests);
-            var model = new AdminLeaveRequestViewVM
+            var leavetypes = _leaverepo.FindAll().ToList();
+            var mappedLeaveTypes = _mapper.Map<List<LeaveType>, List<LeaveTypeVM>>(leavetypes);
+            var model = new CreateLeaveAllocationVM
             {
-                TotalRequests = leaveRequstsModel.Count,
-                ApprovedRequests = leaveRequstsModel.Count(q => q.Approved == true),
-                PendingRequests = leaveRequstsModel.Count(q => q.Approved == null),
-                RejectedRequests = leaveRequstsModel.Count(q => q.Approved == false),
-                LeaveRequests = leaveRequstsModel
+                LeaveTypes = mappedLeaveTypes,
+                NumberUpdated = 0
             };
             return View(model);
         }
 
-        public ActionResult MyLeave()
+        public ActionResult SetLeave(int id)
         {
-            var employee = _userManager.GetUserAsync(User).Result;
-            var employeeid = employee.Id;
-            var employeeAllocations = _leaveAllocRepo.GetLeaveAllocationsByEmployee(employeeid);
-            var employeeRequests = _leaveRequestRepo.GetLeaveRequestsByEmployee(employeeid);
-
-            var employeeAllocationsModel = _mapper.Map<List<LeaveAllocationVM>>(employeeAllocations);
-            var employeeRequestsModel = _mapper.Map<List<LeaveRequestVM>>(employeeRequests);
-
-            var model = new EmployeeLeaveRequestViewVM
+            var leavetype = _leaverepo.FindById(id);
+            var employees = _userManager.GetUsersInRoleAsync("Employee").Result;
+            foreach (var emp in employees)
             {
-                LeaveAllocations = employeeAllocationsModel,
-                LeaveRequests = employeeRequestsModel
-            };
+                if (_leaveallocationrepo.CheckAllocation(id, emp.Id))
+                    continue;
+                var allocation = new LeaveAllocationVM
+                {
+                    DateCreated = DateTime.Now,
+                    EmployeeId = emp.Id,
+                    LeaveTypeId = id,
+                    NumberOfDays = leavetype.DefaultDays,
+                    Period = DateTime.Now.Year
+                };
+                var leaveallocation = _mapper.Map<LeaveAllocation>(allocation);
+                _leaveallocationrepo.Create(leaveallocation);
+            }
+            return RedirectToAction(nameof(Index));
+        }
 
+        public ActionResult ListEmployees()
+        {
+            var employees = _userManager.GetUsersInRoleAsync("Employee").Result;
+            var model = _mapper.Map<List<EmployeeVM>>(employees);
             return View(model);
-
         }
 
-        // GET: LeaveRequest/Details/5
-        public ActionResult Details(int id)
+        // GET: LeaveAllocation/Details/5
+        public ActionResult Details(string id)
         {
-            var leaveRequest = _leaveRequestRepo.FindById(id);
-            var model = _mapper.Map<LeaveRequestVM>(leaveRequest);
-            return View(model);
-        }
-
-        public ActionResult ApproveRequest(int id)
-        {
-            try
+            var employee = _mapper.Map<EmployeeVM>(_userManager.FindByIdAsync(id).Result);
+            var allocations = _mapper.Map<List<LeaveAllocationVM>>(_leaveallocationrepo.GetLeaveAllocationsByEmployee(id));
+            var model = new ViewAllocationsVM
             {
-                var user = _userManager.GetUserAsync(User).Result;
-                var leaveRequest = _leaveRequestRepo.FindById(id);
-                var employeeid = leaveRequest.RequestingEmployeeId;
-                var leaveTypeId = leaveRequest.LeaveTypeId;
-                var allocation = _leaveAllocRepo.GetLeaveAllocationsByEmployeeAndType(employeeid, leaveTypeId);
-                int daysRequested = (int)(leaveRequest.EndDate - leaveRequest.StartDate).TotalDays;
-                //allocation.NumberOfDays -= daysRequested;
-                allocation.NumberOfDays = allocation.NumberOfDays - daysRequested;
-
-                leaveRequest.Approved = true;
-                leaveRequest.ApprovedById = user.Id;
-                leaveRequest.DateActioned = DateTime.Now;
-
-                _leaveRequestRepo.Update(leaveRequest);
-                _leaveAllocRepo.Update(allocation);
-
-                return RedirectToAction(nameof(Index));
-
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
-        public ActionResult RejectRequest(int id)
-        {
-            try
-            {
-                var user = _userManager.GetUserAsync(User).Result;
-                var leaveRequest = _leaveRequestRepo.FindById(id);
-                leaveRequest.Approved = false;
-                leaveRequest.ApprovedById = user.Id;
-                leaveRequest.DateActioned = DateTime.Now;
-
-                _leaveRequestRepo.Update(leaveRequest);
-                return RedirectToAction(nameof(Index));
-
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
-        // GET: LeaveRequest/Create
-        public ActionResult Create()
-        {
-            var leaveTypes = _leaveTypeRepo.FindAll();
-            var leaveTypeItems = leaveTypes.Select(q => new SelectListItem
-            {
-                Text = q.Name,
-                Value = q.Id.ToString()
-            });
-            var model = new CreateLeaveRequestVM
-            {
-                LeaveTypes = leaveTypeItems
+                Employee = employee,
+                LeaveAllocations = allocations
             };
             return View(model);
         }
 
-        // POST: LeaveRequest/Create
+        // GET: LeaveAllocation/Edit/5
+        public ActionResult Edit(int id)
+        {
+            var leaveallocation = _leaveallocationrepo.FindById(id);
+            var model = _mapper.Map<EditLeaveAllocationVM>(leaveallocation);
+            return View(model);
+        }
+
+        // POST: LeaveAllocation/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CreateLeaveRequestVM model)
+        public ActionResult Edit(EditLeaveAllocationVM model)
         {
-
             try
             {
-                var startDate = Convert.ToDateTime(model.StartDate);
-                var endDate = Convert.ToDateTime(model.EndDate);
-                var leaveTypes = _leaveTypeRepo.FindAll();
-                var leaveTypeItems = leaveTypes.Select(q => new SelectListItem
-                {
-                    Text = q.Name,
-                    Value = q.Id.ToString()
-                });
-                model.LeaveTypes = leaveTypeItems;
-
                 if (!ModelState.IsValid)
                 {
                     return View(model);
                 }
-
-                if (DateTime.Compare(startDate, endDate) > 1)
-                {
-                    ModelState.AddModelError("", "Start Date cannot be further in the future than the End Date");
-                    return View(model);
-                }
-
-                var employee = _userManager.GetUserAsync(User).Result;
-                var allocation = _leaveAllocRepo.GetLeaveAllocationsByEmployeeAndType(employee.Id, model.LeaveTypeId);
-                int daysRequested = (int)(endDate - startDate).TotalDays;
-
-                if (daysRequested > allocation.NumberOfDays)
-                {
-                    ModelState.AddModelError("", "You Do Not Sufficient Days For This Request");
-                    return View(model);
-                }
-
-                var leaveRequestModel = new LeaveRequestVM
-                {
-                    RequestingEmployeeId = employee.Id,
-                    StartDate = startDate,
-                    EndDate = endDate,
-                    Approved = null,
-                    DateRequested = DateTime.Now,
-                    DateActioned = DateTime.Now,
-                    LeaveTypeId = model.LeaveTypeId,
-                    RequestComments = model.RequestComments
-                };
-
-                var leaveRequest = _mapper.Map<LeaveRequest>(leaveRequestModel);
-                var isSuccess = _leaveRequestRepo.Create(leaveRequest);
-
+                var record = _leaveallocationrepo.FindById(model.Id);
+                record.NumberOfDays = model.NumberOfDays;
+                var isSuccess = _leaveallocationrepo.Update(record);
                 if (!isSuccess)
                 {
-                    ModelState.AddModelError("", "Something went wrong with submitting your record");
+                    ModelState.AddModelError("", "Error while saving");
                     return View(model);
                 }
-
-                return RedirectToAction("MyLeave");
+                return RedirectToAction(nameof(Details), new { id = model.EmployeeId });
             }
-            catch (Exception ex)
+            catch
             {
-                ModelState.AddModelError("", "Something went wrong");
                 return View(model);
-            }
-        }
-
-        public ActionResult CancelRequest(int id)
-        {
-            var leaveRequest = _leaveRequestRepo.FindById(id);
-            leaveRequest.Cancelled = true;
-            _leaveRequestRepo.Update(leaveRequest);
-            return RedirectToAction("MyLeave");
-        }
-
-        // GET: LeaveRequest/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: LeaveRequest/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: LeaveRequest/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: LeaveRequest/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
             }
         }
     }

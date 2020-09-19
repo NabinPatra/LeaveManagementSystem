@@ -19,7 +19,10 @@ namespace LeaveManagementSystem.Repository
 
         public bool CheckAllocation(int leavetypeid, string employeeid)
         {
-            throw new NotImplementedException();
+            var period = DateTime.Now.Year;
+            return FindAll()
+                .Where(q => q.EmployeeId == employeeid && q.LeaveTypeId == leavetypeid && q.Period == period)
+                .Any();
         }
 
         public bool Create(LeaveAllocation entity)
