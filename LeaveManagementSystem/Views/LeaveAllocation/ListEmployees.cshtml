@@ -1,4 +1,4 @@
-﻿@model IEnumerable<LeaveManagementSystem.Models.EmployeeVM>
+﻿@*@model IEnumerable<LeaveManagementSystem.Models.EmployeeVM>
 
 @{
     ViewData["Title"] = "ListEmployees";
@@ -50,10 +50,10 @@
             <td>
                 <a asp-action="Details" asp-route-id="@item.Id" class="btn-btn-dark"><i class="fa fa-info-circle" aria-hiden="true"></i>Details</a>
                
-                @*@Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |*@
+             
               
             </td>
         </tr>
 }
     </tbody>
-</table>
+</table>*@

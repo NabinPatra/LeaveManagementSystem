@@ -1,175 +1,176 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using LeaveManagementSystem.Contracts;
-using LeaveManagementSystem.Data;
-using LeaveManagementSystem.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Threading.Tasks;
+//using AutoMapper;
+//using LeaveManagementSystem.Contracts;
+//using LeaveManagementSystem.Data;
+//using LeaveManagementSystem.Models;
+//using Microsoft.AspNetCore.Authorization;
+//using Microsoft.AspNetCore.Http;
+//using Microsoft.AspNetCore.Mvc;
 
-namespace LeaveManagementSystem.Controllers
-{
-    [Authorize(Roles ="Administrator")]
-    public class LeaveTypesController : Controller
-    {
-        
-        private readonly ILeaveTypeRepository _repo;
-        private readonly IMapper _mapper;
+//namespace LeaveManagementSystem.Controllers
+//{
+//    [Authorize(Roles = "Administrator")]
+//    public class LeaveTypesController : Controller
+//    {
 
-        public LeaveTypesController(ILeaveTypeRepository repo, IMapper mapper)
-        {
-            _repo = repo;
-            _mapper = mapper;
+//        private readonly ILeaveTypeRepository _repo;
+//        private readonly IMapper _mapper;
 
-        }
-        
-        // GET: LeaveTypeController
-        public ActionResult Index()
-        {
-            var leavetypes = _repo.FindAll().ToList();
-            var model = _mapper.Map<List<LeaveType>, List<LeaveTypeVM>>(leavetypes);
-            return View(model);
-        }
+//        public LeaveTypesController(ILeaveTypeRepository repo, IMapper mapper)
+//        {
+//            _repo = repo;
+//            _mapper = mapper;
 
-        // GET: LeaveTypeController/Details/5
-        public ActionResult Details(int id)
-        {
-            if(!_repo.isExists(id))
-            {
-                return NotFound();
-            }
-            var leavetype = _repo.FindById(id);
-            var model = _mapper.Map<LeaveTypeVM>(leavetype);
-            return View(model);
-        }
+//        }
 
-        // GET: LeaveTypeController/Create
-        public ActionResult Create()
-        {
+//        // GET: LeaveTypeController
+//        public ActionResult Index()
+//        {
+//            var leavetypes = _repo.FindAll().ToList();
+//            var model = _mapper.Map<List<LeaveType>, List<LeaveTypeVM>>(leavetypes);
+//            return View(model);
+//        }
 
-            return View();
-        }
+//        //    // GET: LeaveTypeController/Details/5
+//        //    public ActionResult Details(int id)
+//        //    {
+//        //        if(!_repo.isExists(id))
+//        //        {
+//        //            return NotFound();
+//        //        }
+//        //        var leavetype = _repo.FindById(id);
+//        //        var model = _mapper.Map<LeaveTypeVM>(leavetype);
+//        //        return View(model);
+//        //    }
 
-        // POST: LeaveTypeController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(LeaveTypeVM model)
-        {
-            try
-            {
-                //Add Insert Logic Here
-                if(!ModelState.IsValid)
-                {
-                    return View(model);
-                }
+//        //    // GET: LeaveTypeController/Create
+//        //    public ActionResult Create()
+//        //    {
 
-                var leaveType = _mapper.Map<LeaveType>(model);
-                leaveType.DateCreated = DateTime.Now;
+//        //        return View();
+//        //    }
 
-                var isSuccess = _repo.Create(leaveType);
-                if(!isSuccess)
-                {
-                    ModelState.AddModelError("", "Something Went Wrong");
-                    return View(model);
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                ModelState.AddModelError("", "Something Went Wrong");
-                return View(model);
-            }
-        }
+//        //    // POST: LeaveTypeController/Create
+//        //    [HttpPost]
+//        //    [ValidateAntiForgeryToken]
+//        //    public ActionResult Create(LeaveTypeVM model)
+//        //    {
+//        //        try
+//        //        {
+//        //            //Add Insert Logic Here
+//        //            if(!ModelState.IsValid)
+//        //            {
+//        //                return View(model);
+//        //            }
 
-        // GET: LeaveTypeController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            if(!_repo.isExists(id))
-            {
-                return NotFound();
-            }
+//        //            var leaveType = _mapper.Map<LeaveType>(model);
+//        //            leaveType.DateCreated = DateTime.Now;
 
-            var leavetype = _repo.FindById(id);
-            var model = _mapper.Map<LeaveTypeVM>(leavetype);
+//        //            var isSuccess = _repo.Create(leaveType);
+//        //            if(!isSuccess)
+//        //            {
+//        //                ModelState.AddModelError("", "Something Went Wrong");
+//        //                return View(model);
+//        //            }
+//        //            return RedirectToAction(nameof(Index));
+//        //        }
+//        //        catch
+//        //        {
+//        //            ModelState.AddModelError("", "Something Went Wrong");
+//        //            return View(model);
+//        //        }
+//        //    }
 
-            return View(model);
-        }
+//        //    // GET: LeaveTypeController/Edit/5
+//        //    public ActionResult Edit(int id)
+//        //    {
+//        //        if(!_repo.isExists(id))
+//        //        {
+//        //            return NotFound();
+//        //        }
 
-        // POST: LeaveTypeController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(LeaveTypeVM model)
-        {
-            try
-            {   //Adding update logic here
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
-                var leaveType = _mapper.Map<LeaveType>(model);
-               
-                var isSuccess = _repo.Update(leaveType);
-                if (!isSuccess)
-                {
-                    ModelState.AddModelError("", "Something Went Wrong");
-                    return View(model);
-                }
+//        //        var leavetype = _repo.FindById(id);
+//        //        var model = _mapper.Map<LeaveTypeVM>(leavetype);
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                ModelState.AddModelError("", "Something Went Wrong");
-                return View(model);
-            }
-        }
+//        //        return View(model);
+//        //    }
 
-        // GET: LeaveTypeController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            var leavetype = _repo.FindById(id);
-            if (leavetype == null)
-            {
-                return NotFound();
-            }
-            var isSuccess = _repo.Delete(leavetype);
-            if (!isSuccess)
-            {
+//        //    // POST: LeaveTypeController/Edit/5
+//        //    [HttpPost]
+//        //    [ValidateAntiForgeryToken]
+//        //    public ActionResult Edit(LeaveTypeVM model)
+//        //    {
+//        //        try
+//        //        {   //Adding update logic here
+//        //            if (!ModelState.IsValid)
+//        //            {
+//        //                return View(model);
+//        //            }
+//        //            var leaveType = _mapper.Map<LeaveType>(model);
 
-                return BadRequest();
-            }
-            return RedirectToAction(nameof(Index));
-        }
+//        //            var isSuccess = _repo.Update(leaveType);
+//        //            if (!isSuccess)
+//        //            {
+//        //                ModelState.AddModelError("", "Something Went Wrong");
+//        //                return View(model);
+//        //            }
 
-    }
+//        //            return RedirectToAction(nameof(Index));
+//        //        }
+//        //        catch
+//        //        {
+//        //            ModelState.AddModelError("", "Something Went Wrong");
+//        //            return View(model);
+//        //        }
+//        //    }
 
-    // POST: LeaveTypeController/Delete/5
-    //[HttpPost]
-    //[ValidateAntiForgeryToken]
-    //public ActionResult Delete(int id, LeaveTypeVM model)
-    //{
-    //    try
-    //    {
-    //        var leavetype = _repo.FindById(id);
-    //        if (leavetype == null)
-    //        {
-    //            return NotFound();
-    //        }
-    //        var isSuccess = _repo.Delete(leavetype);
-    //        if (!isSuccess)
-    //        {
+//        //    // GET: LeaveTypeController/Delete/5
+//        //    public ActionResult Delete(int id)
+//        //    {
+//        //        var leavetype = _repo.FindById(id);
+//        //        if (leavetype == null)
+//        //        {
+//        //            return NotFound();
+//        //        }
+//        //        var isSuccess = _repo.Delete(leavetype);
+//        //        if (!isSuccess)
+//        //        {
 
-    //            return View(model);
-    //        }
-    //        return RedirectToAction(nameof(Index));
-    //    }
-    //    catch
-    //    {
-    //        return View(model);
-    //    }
-    //}
-}
+//        //            return BadRequest();
+//        //        }
+//        //        return RedirectToAction(nameof(Index));
+//        //    }
+
+//        //}
+
+//        //// POST: LeaveTypeController/Delete/5
+//        ////[HttpPost]
+//        ////[ValidateAntiForgeryToken]
+//        ////public ActionResult Delete(int id, LeaveTypeVM model)
+//        ////{
+//        ////    try
+//        ////    {
+//        ////        var leavetype = _repo.FindById(id);
+//        ////        if (leavetype == null)
+//        ////        {
+//        ////            return NotFound();
+//        ////        }
+//        ////        var isSuccess = _repo.Delete(leavetype);
+//        ////        if (!isSuccess)
+//        ////        {
+
+//        ////            return View(model);
+//        ////        }
+//        ////        return RedirectToAction(nameof(Index));
+//        ////    }
+//        ////    catch
+//        ////    {
+//        ////        return View(model);
+//        ////    }
+//        ////}
+//    }
+////}
 

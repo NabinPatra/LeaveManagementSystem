@@ -12,10 +12,7 @@
         <p>
             <strong>@Html.DisplayNameFor(model => model.RequestingEmployeeId):</strong>  @Model.RequestingEmployee.FirstName @Model.RequestingEmployee.LastName 's Leave Request <br />
         </p>
-        <hr />
-        <p>
-            @Html.DisplayNameFor(model => model.DateRequested) - @Html.DisplayFor(model => model.DateRequested)
-        </p>
+     
     </div>
 }
 else if (Model.Approved == true)
@@ -25,10 +22,7 @@ else if (Model.Approved == true)
         <p>
             <strong>@Html.DisplayNameFor(model => model.RequestingEmployeeId):</strong> @Model.RequestingEmployee.FirstName @Model.RequestingEmployee.LastName  <br />
         </p>
-        <hr />
-        <p>
-            @Html.DisplayNameFor(model => model.DateRequested) - @Html.DisplayFor(model => model.DateRequested)
-        </p>
+        
     </div>
 }
 else
@@ -38,10 +32,7 @@ else
         <p>
             <strong>@Html.DisplayNameFor(model => model.RequestingEmployeeId):</strong> @Model.RequestingEmployee.FirstName @Model.RequestingEmployee.LastName <br />
         </p>
-        <hr />
-        <p>
-            @Html.DisplayNameFor(model => model.DateRequested) - @Html.DisplayFor(model => model.DateRequested)
-        </p>
+      
     </div>
 }
 <div>
