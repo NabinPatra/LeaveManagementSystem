@@ -1,4 +1,4 @@
-﻿using LeaveManagementSystem.Contracts;
+﻿using LeaveManagementSystem.Interface;
 using LeaveManagementSystem.Data;
 using System;
 using System.Collections.Generic;

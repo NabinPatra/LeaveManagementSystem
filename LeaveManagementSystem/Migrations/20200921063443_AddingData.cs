@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LeaveManagementSystem.Migrations
 {
-    public partial class AddingTablesToSqlServerDb : Migration
+    public partial class AddingData : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -59,8 +59,7 @@ namespace LeaveManagementSystem.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: false),
-                    DefaultDays = table.Column<int>(nullable: false),
-                    DateCreated = table.Column<DateTime>(nullable: false)
+                    DefaultDays = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -180,10 +179,8 @@ namespace LeaveManagementSystem.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NumberOfDays = table.Column<int>(nullable: false),
-                    DateCreated = table.Column<DateTime>(nullable: false),
                     EmployeeId = table.Column<string>(nullable: true),
-                    LeaveTypeId = table.Column<int>(nullable: false),
-                    Period = table.Column<int>(nullable: false)
+                    LeaveTypeId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

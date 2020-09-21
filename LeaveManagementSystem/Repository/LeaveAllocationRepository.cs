@@ -1,4 +1,4 @@
-﻿using LeaveManagementSystem.Contracts;
+﻿using LeaveManagementSystem.Interface;
 using LeaveManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,7 +21,7 @@ namespace LeaveManagementSystem.Repository
         {
             var period = DateTime.Now.Year;
             return FindAll()
-                .Where(q => q.EmployeeId == employeeid && q.LeaveTypeId == leavetypeid && q.Period == period)
+                .Where(q => q.EmployeeId == employeeid && q.LeaveTypeId == leavetypeid )
                 .Any();
         }
 
@@ -34,7 +34,7 @@ namespace LeaveManagementSystem.Repository
         public bool CreateAllocation(int leavetypeid, string employeeid)
         {
             var period = DateTime.Now.Year;
-            return FindAll().Where(q => q.EmployeeId == employeeid && q.LeaveTypeId == leavetypeid && q.Period == period).Any();
+            return FindAll().Where(q => q.EmployeeId == employeeid && q.LeaveTypeId == leavetypeid ).Any();
         }
 
         public bool Delete(LeaveAllocation entity)
@@ -58,14 +58,14 @@ namespace LeaveManagementSystem.Repository
         public ICollection<LeaveAllocation> GetLeaveAllocationsByEmployee(string employeeid)
         {
             var period = DateTime.Now.Year;
-            return FindAll().Where(q => q.EmployeeId == employeeid && q.Period == period).ToList();
+            return FindAll().Where(q => q.EmployeeId == employeeid ).ToList();
         }
 
         public LeaveAllocation GetLeaveAllocationsByEmployeeAndType(string employeeid, int leavetypeid)
         {
             var period = DateTime.Now.Year;
             return FindAll()
-                    .FirstOrDefault(q => q.EmployeeId == employeeid && q.Period == period && q.LeaveTypeId == leavetypeid);
+                    .FirstOrDefault(q => q.EmployeeId == employeeid &&  q.LeaveTypeId == leavetypeid);
         }
 
         public bool isExists(int id)

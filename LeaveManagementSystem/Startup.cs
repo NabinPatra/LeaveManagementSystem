@@ -12,7 +12,7 @@ using LeaveManagementSystem.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using LeaveManagementSystem.Contracts;
+using LeaveManagementSystem.Interface;
 using LeaveManagementSystem.Repository;
 using AutoMapper;
 using LeaveManagementSystem.Mappings;
@@ -76,7 +76,7 @@ namespace LeaveManagementSystem
             app.UseAuthentication();
             app.UseAuthorization();
 
-            SeedData.Seed(userManager, roleManager);
+            Roles.Get(userManager,roleManager);
 
             app.UseEndpoints(endpoints =>
             {

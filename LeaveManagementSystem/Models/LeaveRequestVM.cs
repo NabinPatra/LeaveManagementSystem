@@ -26,8 +26,7 @@ namespace LeaveManagementSystem.Models
 
         [Display(Name = "Date Requested")]
         public DateTime DateRequested { get; set; }
-        [Display(Name = "Date Actioned")]
-        public DateTime DateActioned { get; set; }
+       
         [Display(Name = "Approval State")]
         public bool? Approved { get; set; }
         public EmployeeVM ApprovedBy { get; set; }
@@ -41,14 +40,7 @@ namespace LeaveManagementSystem.Models
 
     public class AdminLeaveRequestViewVM
     {
-        [Display(Name = "Total Number Of Requests")]
-        public int TotalRequests { get; set; }
-        [Display(Name = "Approved Requests")]
-        public int ApprovedRequests { get; set; }
-        [Display(Name = "Pending Requests")]
-        public int PendingRequests { get; set; }
-        [Display(Name = "Rejected Requests")]
-        public int RejectedRequests { get; set; }
+        
         public List<LeaveRequestVM> LeaveRequests { get; set; }
     }
 
@@ -69,9 +61,9 @@ namespace LeaveManagementSystem.Models
         public string RequestComments { get; set; }
     }
 
-    public class EmployeeLeaveRequestViewVM
-    {
-        public List<LeaveAllocationVM> LeaveAllocations { get; set; }
-        public List<LeaveRequestVM> LeaveRequests { get; set; }
-    }
+    //public class EmployeeLeaveRequestViewVM
+    //{
+    //    public List<LeaveAllocationVM> LeaveAllocations { get; set; }
+    //    public List<LeaveRequestVM> LeaveRequests { get; set; }
+    //}
 }

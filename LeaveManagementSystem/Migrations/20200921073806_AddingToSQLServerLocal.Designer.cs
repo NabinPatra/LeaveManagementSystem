@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LeaveManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200920043009_AddingTablesToSqlServerDb")]
-    partial class AddingTablesToSqlServerDb
+    [Migration("20200921073806_AddingToSQLServerLocal")]
+    partial class AddingToSQLServerLocal
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,9 +28,6 @@ namespace LeaveManagementSystem.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("EmployeeId")
                         .HasColumnType("nvarchar(450)");
 
@@ -38,9 +35,6 @@ namespace LeaveManagementSystem.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("NumberOfDays")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Period")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -106,9 +100,6 @@ namespace LeaveManagementSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("DefaultDays")
                         .HasColumnType("int");

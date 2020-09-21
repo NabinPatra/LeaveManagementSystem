@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace LeaveManagementSystem
 {
-    public static class SeedData
+    public static class Roles
     {
-        public static void Seed(UserManager<Employee> userManager,
+        public static void Get(UserManager<Employee> userManager,
                               RoleManager<IdentityRole> roleManager)
         {
-            SeedRoles(roleManager);
-            SeedUsers(userManager);
+            GetRoles(roleManager);
+            GetUsers(userManager);
         }
 
-        private static void SeedUsers(UserManager<Employee> userManager)
+        private static void GetUsers(UserManager<Employee> userManager)
                               
         {
-            if (userManager.FindByNameAsync("manager").Result == null)
+            if (userManager.FindByNameAsync("manager@gmail.com").Result == null)
             {
                 var user = new Employee
                 {
@@ -36,7 +36,7 @@ namespace LeaveManagementSystem
 
         }
 
-        private static void SeedRoles(RoleManager<IdentityRole> roleManager)
+        private static void GetRoles(RoleManager<IdentityRole> roleManager)
 
         {
             if(!roleManager.RoleExistsAsync("Administrator").Result)
@@ -46,7 +46,7 @@ namespace LeaveManagementSystem
                     Name = "Administrator"
                 };
                 
-                roleManager.CreateAsync(role);
+                var result = roleManager.CreateAsync(role);
             }
 
             if (!roleManager.RoleExistsAsync("Employee").Result)
@@ -56,7 +56,7 @@ namespace LeaveManagementSystem
                     Name = "Employee"
                 };
 
-                roleManager.CreateAsync(role);
+                var result = roleManager.CreateAsync(role);
             }
         }
 

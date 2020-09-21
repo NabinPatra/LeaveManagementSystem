@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LeaveManagementSystem.Contracts
+namespace LeaveManagementSystem.Interface
 {
     public interface ILeaveAllocationRepository : IRepositoryBase<LeaveAllocation>
     {
